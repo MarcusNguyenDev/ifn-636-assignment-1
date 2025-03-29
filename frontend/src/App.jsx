@@ -1,11 +1,25 @@
 import { useState } from "react";
+import { Route, Routes, Navigate } from "react-router";
 import reactLogo from "./assets/react.svg";
 import viteLogo from "/vite.svg";
 
-function App() {
-  const [count, setCount] = useState(0);
+// Pages
+import Dashboard from "./pages/dashboard.jsx";
+import GlobalLayout from "./components/layout.jsx";
+import Auth from "./components/auth.jsx";
 
-  return <div></div>;
+function App() {
+  return (
+    <>
+      <Routes>
+        <Route index path="/" element={<Navigate to="/app" />} />
+        <Route index path={"/auth"} element={} />
+        <Route path={"/app"} element={<GlobalLayout />}>
+          <Route index element={<Dashboard />} />
+        </Route>
+      </Routes>
+    </>
+  );
 }
 
 export default App;
