@@ -9,6 +9,8 @@ import ActiveOrders from "./pages/active-orders.jsx";
 import GlobalLayout from "./components/layout.jsx";
 import Auth from "./pages/auth.jsx";
 import Menu from "./pages/menu.jsx";
+import Users from "./pages/user.jsx";
+import Orders from "./pages/order.jsx";
 
 function App() {
   return (
@@ -19,6 +21,8 @@ function App() {
         <Route path={"app"} element={<GlobalLayout />}>
           <Route index element={<ActiveOrders />} />
           <Route path={"menu"} element={<Menu />} />
+          <Route path={"users"} element={<Users />} />
+          <Route path={"orders"} element={<Orders />} />
         </Route>
       </Routes>
     </>

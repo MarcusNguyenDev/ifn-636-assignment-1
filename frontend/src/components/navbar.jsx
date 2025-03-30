@@ -3,6 +3,7 @@ import Logo from "../components/global/logo.jsx";
 import { NavLink } from "react-router-dom";
 
 function Navbar(props) {
+  const role = sessionStorage.getItem("role");
   return (
     <div
       className={
@@ -43,7 +44,7 @@ function Navbar(props) {
 
           <li>
             <NavLink
-              to={"/app/order"}
+              to={"/app/orders"}
               type={"button"}
               className={({ isActive }) => "btn btn-outline btn-accent w-full"}
             >
@@ -51,15 +52,19 @@ function Navbar(props) {
             </NavLink>
           </li>
 
-          <li>
-            <NavLink
-              to={"/app/users"}
-              type={"button"}
-              className={({ isActive }) => "btn btn-outline btn-accent w-full"}
-            >
-              Users
-            </NavLink>
-          </li>
+          {role === "ADMIN" ? (
+            <li>
+              <NavLink
+                to={"/app/users"}
+                type={"button"}
+                className={({ isActive }) =>
+                  "btn btn-outline btn-accent w-full"
+                }
+              >
+                Users
+              </NavLink>
+            </li>
+          ) : null}
         </ul>
       </div>
     </div>
