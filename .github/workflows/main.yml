@@ -49,5 +49,5 @@ jobs:
       - name: SSH and Deploy
         run: |
           ssh -i ~/.ssh/DeployKey ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_IP }} << 'ENDSSH'
-          bash cd ifn-636-assignment-1 && git pull && cd backend && bun install && bun run build && cd ../frontend && bun install && bun run build && pm2 restart all
+          cd ifn-636-assignment-1 && git pull && cd backend && bun install && bun run build && cd ../frontend && bun install && bun run build && pm2 restart all
           ENDSSH
