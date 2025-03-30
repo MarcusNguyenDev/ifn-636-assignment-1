@@ -38,6 +38,7 @@ jobs:
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           port: 22
           script: |
+            bash
             cd ifn-636-assignment-1
             git pull
             cd backend
