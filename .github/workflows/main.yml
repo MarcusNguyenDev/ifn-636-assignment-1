@@ -1,0 +1,54 @@
+name: CI/CD Pipeline
+
+on:
+  push:
+    branches:
+      - main
+      - stagging
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v3
+
+      - name: Run Tests
+        run: |
+          echo "No tests implemented yet, skipping..."
+          exit 0
+  deploy:
+    if: github.ref == 'refs/heads/main'
+    needs: test
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v3
+
+#      - name: Deploy to Production
+#        uses: appleboy/ssh-action@v1.2.2
+#        with:
+#          host: ${{ secrets.SERVER_HOST }}
+#          username: ${{ secrets.SERVER_USER }}
+#          key: ${{ secrets.SSH_PRIVATE_KEY }}
+#          port: 22
+#          script: |
+#            cd ifn-636-assignment-1 && git pull && cd backend && bun install && bun run build && cd ../frontend && bun install && bun run build && pm2 restart all
+
+      - name: Setup SSH Key
+        run: |
+          mkdir -p ~/.ssh/
+          echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/DeployKey
+          chmod 600 ~/.ssh/DeployKey
+          eval $(ssh-agent -s)
+          ssh-add ~/.ssh/DeployKey
+
+      - name: Add Server to Known Hosts
+        run: ssh-keyscan -H ${{ secrets.SERVER_HOST }} >> ~/.ssh/known_hosts
+
+      - name: SSH and Deploy
+        run: |
+          ssh -i ~/.ssh/DeployKey ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }} << 'ENDSSH'
+          export PATH="/home/ubuntu/.bun/bin:/home/ubuntu/.nvm/versions/node/v22.14.0/bin:$PATH"
+          cd ifn-636-assignment-1 && git pull && cd backend && bun install && echo "${{ secrets.BE_ENV }}" > .env && cd ../frontend && bun install && bun run build && echo "${{ secrets.FE_ENV }}" > .env && pm2 restart all
+          ENDSSH
