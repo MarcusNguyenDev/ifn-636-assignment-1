@@ -25,18 +25,29 @@ jobs:
       - name: Checkout Code
         uses: actions/checkout@v3
 
-      - name: Setup SSH Agent
-        uses: webfactory/ssh-agent@v0.5.3
-        with:
-          ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
+#      - name: Deploy to Production
+#        uses: appleboy/ssh-action@v1.2.2
+#        with:
+#          host: ${{ secrets.SERVER_HOST }}
+#          username: ${{ secrets.SERVER_USER }}
+#          key: ${{ secrets.SSH_PRIVATE_KEY }}
+#          port: 22
+#          script: |
+#            cd ifn-636-assignment-1 && git pull && cd backend && bun install && bun run build && cd ../frontend && bun install && bun run build && pm2 restart all
 
-      - name: Deploy to Production
-        uses: appleboy/ssh-action@v1.2.2
-        with:
-          host: ${{ secrets.SERVER_HOST }}
-          username: ${{ secrets.SERVER_USER }}
-          key: ${{ secrets.SSH_PRIVATE_KEY }}
-          port: 22
-          script: |
-            source ~/.bashrc && cd ifn-636-assignment-1 && git pull && cd backend && bun install && bun run build && cd ../frontend && bun install && bun run build && pm2 restart all
+      - name: Setup SSH Key
+        run: |
+          mkdir -p ~/.ssh/
+          echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/DeployKey
+          chmod 600 ~/.ssh/DeployKey
+          eval $(ssh-agent -s)
+          ssh-add ~/.ssh/DeployKey
 
+      - name: Add Server to Known Hosts
+        run: ssh-keyscan -H ${{ secrets.SERVER_HOST }} >> ~/.ssh/known_hosts
+
+      - name: SSH and Deploy
+        run: |
+          ssh -i ~/.ssh/DeployKey ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_IP }} << 'ENDSSH'
+          bash cd ifn-636-assignment-1 && git pull && cd backend && bun install && bun run build && cd ../frontend && bun install && bun run build && pm2 restart all
+          ENDSSH
