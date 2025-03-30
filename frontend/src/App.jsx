@@ -19,10 +19,9 @@ function App() {
         <Route index path="/" element={<Navigate to="/app" />} />
         <Route index path={"auth"} element={<Auth />} />
         <Route path={"app"} element={<GlobalLayout />}>
-          <Route index element={<ActiveOrders />} />
           <Route path={"menu"} element={<Menu />} />
           <Route path={"users"} element={<Users />} />
-          <Route path={"orders"} element={<Orders />} />
+          <Route index element={<Orders />} />
         </Route>
       </Routes>
     </>

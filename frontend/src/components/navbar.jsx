@@ -28,7 +28,7 @@ function Navbar(props) {
               type={"button"}
               className={({ isActive }) => "btn btn-outline btn-accent w-full"}
             >
-              Active Orders
+              Orders
             </NavLink>
           </li>
 
@@ -39,16 +39,6 @@ function Navbar(props) {
               className={({ isActive }) => "btn btn-outline btn-accent w-full"}
             >
               Menu
-            </NavLink>
-          </li>
-
-          <li>
-            <NavLink
-              to={"/app/orders"}
-              type={"button"}
-              className={({ isActive }) => "btn btn-outline btn-accent w-full"}
-            >
-              Order
             </NavLink>
           </li>
 
