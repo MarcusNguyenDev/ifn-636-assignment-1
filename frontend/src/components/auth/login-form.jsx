@@ -1,15 +1,42 @@
 import React from "react";
+import { useState } from "react";
+import axios from "../../axios.js";
+import { useNavigate } from "react-router";
+import { useAuth } from "../../context/auth-context.jsx";
 
 function LoginForm(props) {
+  const [errMessage, setErrMessage] = useState("");
+  const navigate = useNavigate();
+  const { login } = useAuth();
+
   return (
     <form
-      onSubmit={(e) => {
+      onSubmit={async (e) => {
         e.preventDefault();
         const formData = new FormData(e.target);
-        console.log(formData.get("password"));
+        axios
+          .post(
+            "/auth/login",
+            {
+              email: formData.get("email"),
+              password: formData.get("password"),
+            },
+            {},
+          )
+          .then((res) => {
+            console.log(res.data);
+            const { name, email, token, role } = res.data;
+            login({ name, email, token, role });
+          })
+          .then(() => {
+            navigate("/app");
+          })
+          .catch((err) => {
+            setErrMessage("Invalid email or password");
+          });
       }}
     >
-      <div className="rounded-md border-2 border-primary z-10 shadow-2xl bg-base-100 p-16 px-8 w-[400px]">
+      <div className="rounded-md border-2 border-primary z-10 shadow-2xl bg-base-100 p-16 px-8 sm:w-[400px] w-[full]">
         <div className={"mb-1 text-xl font-bold underline flex text-primary"}>
           Login
         </div>
@@ -26,7 +53,7 @@ function LoginForm(props) {
             <input
               className={"w-full"}
               type="username"
-              name="username"
+              name="email"
               placeholder="name@site.com"
             />
           </label>
@@ -47,6 +74,8 @@ function LoginForm(props) {
             />
           </label>
         </div>
+
+        <div className={"pb-4 text-error font-semibold"}>{errMessage}</div>
 
         <div className="flex w-full flex-col">
           <button className="btn btn-primary w-full" type={"submit"}>
