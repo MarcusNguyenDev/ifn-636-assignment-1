@@ -50,5 +50,5 @@ jobs:
         run: |
           ssh -i ~/.ssh/DeployKey ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }} << 'ENDSSH'
           export PATH="/home/ubuntu/.bun/bin:/home/ubuntu/.nvm/versions/node/v22.14.0/bin:$PATH"
-          cd ifn-636-assignment-1 && git pull && cd backend && bun install && echo "${{ secrets.BE_ENV }}" > .env && cd ../frontend && bun install && bun run build && echo "${{ secrets.FE_ENV }}" > .env && pm2 restart all
+          cd ifn-636-assignment-1 && git pull && cd backend && bun install --frozen-lockfile && echo "${{ secrets.BE_ENV }}" > .env && cd ../frontend && bun install --frozen-lockfile && bun run build && echo "${{ secrets.FE_ENV }}" > .env && pm2 restart all
           ENDSSH
