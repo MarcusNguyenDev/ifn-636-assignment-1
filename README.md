@@ -1,68 +1,124 @@
-# **Assignment: Full-Stack CRUD Application Development with DevOps Practices**
+# CI/CD Pipeline
 
-## **Objective**
+This document outlines the CI/CD process for the Restaurant Management System and explains how to run the project in development mode locally.
 
-You have been provided with a starter project that includes user authentication using  **Node.js, React.js, and MongoDB**. Your task is to extend this application by implementing **CRUD (Create, Read, Update, Delete) operations** for a real-world application of your choice, while following industry best practices such as:
+## Overview
 
-* **Project Management with JIRA**
-* **Requirement Diagram using SysML**
-* **Version Control using GitHub**
-* **CI/CD Integration for Automated Deployment**
+The CI/CD pipeline is designed to automate testing and deployment using GitHub Actions. It is triggered on pushes to the `main` and `stagging` branches. The pipeline consists of two jobs:
 
-## **Requirements**
+- **Test Job:** Verifies code integrity by running tests.
+- **Deploy Job:** Deploys the latest code to the production environment when changes are pushed to the `main` branch.
 
-### **1. Choose a Real-World Application**
+## Pipeline Workflow
 
-Select a meaningful use case for your CRUD operations. We will provide the list, you have to select it.
+### Trigger
+- **On Push:**  
+  The pipeline is triggered when code is pushed to either the `main` or `stagging` branches.
 
-### **2. Project Management with JIRA and SysML**
+### Jobs
 
-* Create a **JIRA project** and define:
-  * **Epic**
-  * **User Stories** (features required in your app)
-  * **Child issues & Subtasks** (breaking down development work)
-  * **Sprint Planning** (organizing work into milestones)
-* Document your JIRA **board URL** in the project README.
-* Draw a requirements diagram
+#### 1. Test Job
+- **Environment:**  
+  Runs on `ubuntu-latest`.
+- **Steps:**
+  - **Checkout Code:** Uses `actions/checkout@v3` to clone the repository.
+  - **Run Tests:**  
+    Currently, no tests are implemented. The step outputs a message and exits with a success status.
 
-### **3. Backend Development (Node.js + Express + MongoDB)**
+#### 2. Deploy Job
+- **Conditional Execution:**  
+  This job only runs on the `main` branch.
+- **Dependencies:**  
+  It runs after the successful completion of the test job.
+- **Environment:**  
+  Runs on `ubuntu-latest`.
+- **Steps:**
+  - **Checkout Code:** Retrieves the latest code.
+  - **Setup SSH Key:**
+    - Creates an SSH key file from the secret `SSH_PRIVATE_KEY`.
+    - Sets appropriate file permissions and adds the key to the SSH agent.
+  - **Add Server to Known Hosts:**
+    - Uses `ssh-keyscan` to add the server host to the list of known hosts, ensuring a secure connection.
+  - **SSH and Deploy:**
+    - Establishes an SSH connection to the server.
+    - Executes a deployment script that:
+      - Navigates to the project directory.
+      - Pulls the latest code.
+      - Installs backend dependencies with `bun install --frozen-lockfile`.
+      - Sets up backend environment variables.
+      - Installs and builds frontend dependencies.
+      - Restarts the application using `pm2`.
 
-* Create a user-friendly interface to interact with your API (Some portion developed, follow task manager app)).
-* Implement **forms** for adding and updating records.
-* Display data using  **tables, cards, or lists (Follow how we showed data in task manager app)**
+Below is the relevant GitHub Actions workflow configuration:
 
-### **4. Frontend Development (React.js)**
+```yaml
+name: CI/CD Pipeline
 
-* Create a user-friendly interface to interact with your API (**Some portion developed, follow task manager app)**.
-* Implement **forms** for adding, showing, deleting and updating records (CRUD).
-* Display data using  **tables, cards, or lists (Follow how we showed data in task manager app)**
+on:
+  push:
+    branches:
+      - main
+      - stagging
 
-### **5. Authentication & Authorization**
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v3
 
-* Ensure **only authenticated users** can access and perform CRUD operations. (Already developed in your project)
-* Use **JWT (JSON Web Tokens)** for user authentication (Use the task manager one from .env file).
+      - name: Run Tests
+        run: |
+          echo "No tests implemented yet, skipping..."
+          exit 0
+  deploy:
+    if: github.ref == 'refs/heads/main'
+    needs: test
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v3
 
-### **6. GitHub Version Control & Branching Strategy**
+      - name: Setup SSH Key
+        run: |
+          mkdir -p ~/.ssh/
+          echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/DeployKey
+          chmod 600 ~/.ssh/DeployKey
+          eval $(ssh-agent -s)
+          ssh-add ~/.ssh/DeployKey
 
-* Use **GitHub for version control** and maintain:
-  * `main` branch (stable production-ready code)
-  * Feature branches (`feature/xyz`) for each new functionality
-* Follow proper **commit messages** and  **pull request (PR) reviews** .
+      - name: Add Server to Known Hosts
+        run: ssh-keyscan -H ${{ secrets.SERVER_HOST }} >> ~/.ssh/known_hosts
 
-### **7. CI/CD Pipeline Setup**
+      - name: SSH and Deploy
+        run: |
+          ssh -i ~/.ssh/DeployKey ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }} << 'ENDSSH'
+          export PATH="/home/ubuntu/.bun/bin:/home/ubuntu/.nvm/versions/node/v22.14.0/bin:$PATH"
+          cd ifn-636-assignment-1 && git pull && cd backend && bun install --frozen-lockfile && echo "${{ secrets.BE_ENV }}" > .env && cd ../frontend && bun install --frozen-lockfile && bun run build && echo "${{ secrets.FE_ENV }}" > .env && pm2 restart all
+          ENDSSH
+```
 
-* Implement a **CI/CD pipeline using GitHub Actions** to:
-  * Automatically **run tests** on every commit/pull request (Optional).
-  * Deploy the **backend** to **AWS** .
-  * Deploy the **frontend** to **AWS**.
-* Document your  **CI/CD workflow in the README** .
+# Project Setup Instructions
 
-## **Submission Requirements**
+Follow the steps below to set up and run the Restaurant Management System in development mode.
 
-* **JIRA Project Board URL** (user stories ).
-* **Requirment diagram** (Using project features)
-* **GitHub Repository** (`backend/` and `frontend/`).
-* **README.md** with:
+## Prerequisites
 
-  * Project setup instructions.
-  * CI/CD pipeline details.
+- **Node.js** and **bun** installed globally  
+  (Bun is used as the package manager and runtime. Install via https://bun.sh)
+
+- **MongoDB** instance running locally or accessible via connection string
+
+### Script
+```bash
+git clone https://github.com/MarcusNguyenDev/ifn-636-assignment-1.git
+cd ifn-636-assignment-1
+
+cd backend
+npm install
+npm run dev
+
+cd ../frontend
+npm install
+npm run dev
+```
