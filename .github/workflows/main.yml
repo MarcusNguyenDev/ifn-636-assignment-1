@@ -38,15 +38,5 @@ jobs:
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           port: 22
           script: |
-            bash
-            cd ifn-636-assignment-1
-            git pull
-            cd backend
-            bun install
-            bun run build
-            
-            cd ../frontend
-            bun install
-            bun run build
-            
-            pm2 restart all
+            source ~/.bashrc && cd ifn-636-assignment-1 && git pull && cd backend && bun install && bun run build && cd ../frontend && bun install && bun run build && pm2 restart all
+
