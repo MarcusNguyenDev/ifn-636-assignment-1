@@ -3,7 +3,7 @@ const Menu = require("../models/Menu.js");
 const getMenu = async (req, res) => {
   try {
     const menu = await Menu.find();
-    res.status(200).json(menu);
+    res.status(200).json(menu.reverse());
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
