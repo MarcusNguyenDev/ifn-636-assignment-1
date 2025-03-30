@@ -2,7 +2,7 @@ import { useState } from "react";
 import { Route, Routes, Navigate } from "react-router";
 import reactLogo from "./assets/react.svg";
 import viteLogo from "/vite.svg";
-import "/font-awesome/css/all.min.css?url";
+import "../public/font-awesome/css/all.min.css?url";
 
 // Pages
 import ActiveOrders from "./pages/active-orders.jsx";
