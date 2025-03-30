@@ -2,18 +2,28 @@ import React from "react";
 
 import { Outlet } from "react-router";
 import { useState, useEffect } from "react";
-import Navbarv from "./navbar.jsx";
+import Navbar from "./navbar.jsx";
+import TopNav from "./top-navbar.jsx";
 import axios from "../axios.js";
-import { useAuth } from "../context/auth-context.jsx";
 import { useNavigate, Navigate } from "react-router";
+import { ToastContainer } from "react-toastify";
 
 function GlobalLayout() {
-  const { user } = useAuth();
+  const token = sessionStorage.getItem("token");
   const navigate = useNavigate();
 
-  return user ? (
-    <div className="flex flex-col h-screen">
-      <Outlet />
+  return token ? (
+    <div className="flex h-screen w-screen">
+      <ToastContainer />
+      <Navbar />
+      <div className="flex flex-col w-full h-full">
+        <TopNav />
+        <div className="flex flex-col w-full h-full overflow-y-auto px-12 py-8">
+          <div className="flex flex-col w-full h-full border-r-2 border-neutral-300 border-b-2 rounded-3xl z-10 shadow-xl py-12 px-12">
+            <Outlet />
+          </div>
+        </div>
+      </div>
     </div>
   ) : (
     <Navigate to={`/auth`} />

@@ -26,7 +26,10 @@ function LoginForm(props) {
           .then((res) => {
             console.log(res.data);
             const { name, email, token, role } = res.data;
-            login({ name, email, token, role });
+            sessionStorage.setItem("token", token);
+            sessionStorage.setItem("email", email);
+            sessionStorage.setItem("name", name);
+            sessionStorage.setItem("role", role);
           })
           .then(() => {
             navigate("/app");

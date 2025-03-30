@@ -1,7 +1,7 @@
 import React from "react";
 
-function Dashboard(props) {
+function ActiveOrders(props) {
   return <div>And this is child</div>;
 }
 
-export default Dashboard;
+export default ActiveOrders;
