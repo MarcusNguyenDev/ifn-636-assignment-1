@@ -41,11 +41,11 @@ jobs:
             cd ifn-636-assignment-1
             git pull
             cd backend
-            bun install --frozen-lockfile
+            bun install
             bun run build
             
             cd ../frontend
-            bun install --frozen-lockfile
+            bun install
             bun run build
             
             pm2 restart all
