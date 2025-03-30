@@ -48,5 +48,7 @@ jobs:
 
       - name: SSH and Deploy
         run: |
-          ssh -i ~/.ssh/DeployKey ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }} 'bash -l -c "cd ifn-636-assignment-1 && git pull && cd backend && npm install && npm run build && cd ../frontend && npm install && npm run build && pm2 restart all"'
+          ssh -i ~/.ssh/DeployKey ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }} << 'ENDSSH'
+          export PATH="/home/ubuntu/.bun/bin:$PATH"
+          cd ifn-636-assignment-1 && git pull && cd backend && npm install && npm run build && cd ../frontend && npm install && npm run build && pm2 restart all
           ENDSSH
