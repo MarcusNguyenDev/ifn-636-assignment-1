@@ -49,6 +49,5 @@ jobs:
       - name: SSH and Deploy
         run: |
           ssh -i ~/.ssh/DeployKey ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }} << 'ENDSSH'
-          cd ifn-636-assignment-1
           bash -l -c "./deployment_script.sh"
           ENDSSH
