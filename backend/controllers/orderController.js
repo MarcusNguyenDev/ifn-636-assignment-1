@@ -1,4 +1,4 @@
-const Order = require("../models/order");
+const Order = require("../models/Order");
 
 const getOrders = async (req, res) => {
   try {
@@ -49,11 +49,9 @@ const updateOrder = async (req, res) => {
     status = status.toUpperCase();
     const allowedStatuses = ["PENDING", "COOKING", "FINALISED"];
     if (!allowedStatuses.includes(status)) {
-      return res
-        .status(400)
-        .json({
-          message: `Status must be one of: ${allowedStatuses.join(", ")}`,
-        });
+      return res.status(400).json({
+        message: `Status must be one of: ${allowedStatuses.join(", ")}`,
+      });
     }
     const order = await Order.findByIdAndUpdate(
       req.params.id,
